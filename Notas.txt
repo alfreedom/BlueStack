@@ -1,0 +1,20 @@
+
+Notas sobre APP_UART:
+
+Estas notas son para solucionar posibles errores con la configuración y
+uso de la UART con el sdk de nordic y la APP_UART.
+
+El SDK de nordic ya incluye un driver y una aplicación para utilizar la
+UART, solo que existe un pequeño detalle, se puede usar la uart con
+FIFO o sin FIFO, si se usa sin fifo, sólo se puede enviar y recibir un
+caracter a la vez, dando como resultado comportamientos erroneos o
+inesperados.
+
+Para solucionar este problema solo hay que usar y compilar l archivo
+"app_uart_fifo.c", en lugar el "app_uart.c" además del archivo "app_fifo.c"
+
+además hay que incluir los directiorios fifo y de la uart al archivo
+makefile.
+
+para usarse se sigue usando #include "app_uart.h" dentro del código.
+
