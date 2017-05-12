@@ -1,1 +1,1 @@
-BlueStack
+BlueStack Framework

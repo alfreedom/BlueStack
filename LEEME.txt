@@ -130,9 +130,6 @@ BlueStack-nrf51822-gcc-linux-template.zip, el cual contiene la estructura siguie
         * ble_app_gcc_nrf51.ld
         * Makefile.bs
     +-> include/
-        +-> services/
-        	* ble_custom_service.h
-        	* ble_custom_service.c
         * ble400.h
         * bluestack_config.h
         * sdk_config.h
@@ -155,9 +152,6 @@ include/:
 	Contiene los archivos de cabecera definidos por el usuario y el archivo de configuración
 	de los drivers del SKD de Nordic. Si se necesita utilizar algun driver de Nordic se debe habilitar
 	y configurar en el archivo sdk_config.h y agregar el include del driver en el archivo Makefile.
-
-include/services:
-	Contiene los archivos que definen los servicios que se han de implementar en la aplicación BLE.
 
 BlueStack.h:
 	Contiene la estructura y funciones para inicializar el softdevice de Nordic, asi
@@ -202,13 +196,13 @@ sdk_config.h
 La carpeta "services" contiene los servicios de usuario que tendrá la aplicación, se incluten los archivos 
 ble_custom_service.h y ble_custom_service.c son las bibliotecas que integran un servicio definido por el usuario.
 
-Es necesario modificar el archivo Makefile del proyecto, agregando correctamente la ruta del SDK en la linea 10:
+Es necesario modificar el archivo Makefile del proyecto, agregando correctamente la ruta del SDK en la linea:
 
     SDK_PATH = /opt/"CARPETA_SDK"
 
 
 Para compilar, hay que entrar desde una terminal a la carpeta del proyecto y se ejecuta el comando "make", 
-si todas las herramientes y el proyecto quedó configurado correctamente, la compilación no debe mostrar errores.
+si todas las herramientes y el proyecto quedaron configurados correctamente, la compilación no debe mostrar errores.
 
 La compilación creará una carpeta llamada "_build" donde se encuentran los archivos objeto generados por
 el compilador incluyendo los ejecutables .hex y .bin del programa.

@@ -1,7 +1,6 @@
 /****************************************************************************
  * Copyright (C) 2017 by Alfredo Orozco, alfredoopa@gmail.com               *
  *                                                                          *
- * This file is part of file of BlueRoomba Firmware.                        *
  *                                                                          *
  *   BlueRoomba isfree software: you can redistribute it and/or modify it   *
  *   under the terms of the GNU Lesser General Public License as published  *
@@ -23,7 +22,7 @@
  * @author Alfredo Orozco de la Paz
  * @date 2 de Marzo del 2017
  * @brief Archivo principal que contiene la función main e inicialización
- *        del software BlueRoomba con el SoC NRF51822
+ *        del software con el SoC NRF51822
  *
  * Se utiliza el framework BlueStack para incializar el stack bluetooth
  * provisto por Nordic Semiconductos©. Para mas detalles acerca de
@@ -46,13 +45,10 @@
 #define SRV_UUID_WRITE_CHAR    0xAA02
 #define SRV_UUID_READ_CHAR     0xAA03
 
-#define CHAR_WRITE 
-#define CHAR_READ  
 
-BlueStack_Service_t blueroomba_srv;
 BlueStack_Characteristic_t chars[2];
 
-uint32_t blueroomba_srv_id;
+uint32_t my_service_id;
 uint32_t err_code;
 
 APP_TIMER_DEF(advertising_led_timer_id);
@@ -60,22 +56,13 @@ APP_TIMER_DEF(advertising_led_timer_id);
 
 void My_ADV_Event(ble_adv_evt_t ble_adv_evt)
 {
-
-    //uint32_t err_code;
-
     switch (ble_adv_evt)
     {
         case BLE_ADV_EVT_FAST:
-            //NRF_LOG_INFO("Fast advertising\r\n");
-            //err_code = bsp_indication_set(BSP_INDICATE_ADVERTISING);
-            //APP_ERROR_CHECK(err_code);
             app_timer_start(advertising_led_timer_id, ADVERTISING_LED_INTERVAL, NULL);
-            
             break;
 
         case BLE_ADV_EVT_IDLE:
-            // Your code HERE
-            //sleep_mode_enter();
             app_timer_stop(advertising_led_timer_id);
             break;
 
@@ -85,7 +72,6 @@ void My_ADV_Event(ble_adv_evt_t ble_adv_evt)
 }
 
 static void AdvertisingLedUpdate(){
-
     nrf_gpio_pin_set(LED3);
     nrf_delay_ms(20);
     nrf_gpio_pin_clear(LED3);
@@ -99,7 +85,8 @@ void OnBlueRoombaWrite(BlueStack_Characteristic_t * p_char, uint8_t* data, uint8
             nrf_gpio_pin_set(LED4);
         else
             nrf_gpio_pin_clear(LED4);
-        BlueStack_ServiceRead(blueroomba_srv_id, &chars[0], data, 1);
+
+        BlueStack_ServiceRead(my_service_id, &chars[0], data, 1);
     }
 
 }
@@ -110,17 +97,9 @@ void OnBlueRoombaWrite(BlueStack_Characteristic_t * p_char, uint8_t* data, uint8
  */
 static void timers_init(void)
 {
-
     // Create timers.
-
-    /* YOUR_JOB: Create any timers to be used by the application.
-                 Below is an example of how to create a timer.
-                 For every new timer needed, increase the value of the macro APP_TIMER_MAX_TIMERS by
-                 one.
-       uint32_t err_code;
-       err_code = app_timer_create(&m_app_timer_id, APP_TIMER_MODE_REPEATED, timer_timeout_handler);
-       APP_ERROR_CHECK(err_code); */
-       err_code = app_timer_create(&advertising_led_timer_id, APP_TIMER_MODE_REPEATED, AdvertisingLedUpdate);
+    err_code = app_timer_create(&advertising_led_timer_id, APP_TIMER_MODE_REPEATED, AdvertisingLedUpdate);
+    APP_ERROR_CHECK(err_code);
 
 }
 
@@ -147,10 +126,11 @@ static void buttons_leds_init()
 {
     nrf_gpio_cfg_output(LED4);
     nrf_gpio_cfg_output(LED3);
-    //nrf_gpio_pin_set(LED4);
 }
 
 void services_init(){
+
+    BlueStack_Service_t my_service;
 
     ble_uuid128_t uuid_base = {SRV_UUID_BASE};
 
@@ -166,14 +146,14 @@ void services_init(){
 
 
 
-    memset(&blueroomba_srv, 0, sizeof(blueroomba_srv));
-    blueroomba_srv.service_uuid_base = uuid_base;
-    blueroomba_srv.service_uuid      = SRV_UUID_SERVICE;
-    blueroomba_srv.chars             = chars;
-    blueroomba_srv.chars_count       = 2;
-    blueroomba_srv.ble_write_handler = OnBlueRoombaWrite;
+    memset(&my_service, 0, sizeof(my_service));
+    my_service.service_uuid_base = uuid_base;
+    my_service.service_uuid      = SRV_UUID_SERVICE;
+    my_service.chars             = chars;
+    my_service.chars_count       = 2;
+    my_service.ble_write_handler = OnBlueRoombaWrite;
 
-    blueroomba_srv_id = BlueStack_ServiceAdd(&blueroomba_srv);
+    my_service_id = BlueStack_ServiceAdd(&my_service);
 
 
 }
@@ -246,7 +226,6 @@ int main(void)
     
     // Inicialización del sistema
     Init_System();
-
 
     /* Inicia visibilidad (publicidad) */
     err_code = BlueStack_AdvertisingStart();
