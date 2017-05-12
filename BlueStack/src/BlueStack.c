@@ -1,6 +1,10 @@
 #include "BlueStack.h"
 #include "bluestack_events.h"
 
+
+BlueStack_BLE_Handler  user_ble_handler;
+
+
 uint32_t BlueStack_Init(BlueStack_cfg_t* bs_cfg) {
 
 
@@ -13,9 +17,14 @@ uint32_t BlueStack_Init(BlueStack_cfg_t* bs_cfg) {
     bluestack_adv_init(&(bs_cfg->adv_uuid), bs_cfg->adv_interval, bs_cfg->adv_timeout, bs_cfg->adv_event_handler);
     //services_init();
     conn_params_init(bs_cfg->conn_event_handler, bs_cfg->errconn_event_handler);
+
+    user_ble_handler = bs_cfg->ble_event_handler;
 	return 0;
 }
 
+uint32_t BlueStack_AdvertisingStop() {
+    return sd_ble_gap_adv_stop();   
+}
 uint32_t BlueStack_AdvertisingStart() {
 	return ble_advertising_start(BLE_ADV_MODE_FAST);	
 }

@@ -193,6 +193,19 @@ __WEAK void BlueStack_PEER_Event(const pm_evt_t* p_evt)
              * Sometimes, it cannot be restarted until the link is disconnected and reconnected.
              * Sometimes it is impossible, to secure the link, or the peer device does not support it.
              * How to handle this error is highly application dependent. */
+            switch (p_evt->params.conn_sec_failed.error)
+            {
+                case PM_CONN_SEC_ERROR_PIN_OR_KEY_MISSING:
+                    // Rebond if one party has lost its keys.
+                    err_code = pm_conn_secure(p_evt->conn_handle, true);
+                    if (err_code != NRF_ERROR_INVALID_STATE)
+                    {
+                        APP_ERROR_CHECK(err_code);
+                    }
+                    break;
+                default:
+                    break;
+            }
         } break;
 
         case PM_EVT_CONN_SEC_CONFIG_REQ:

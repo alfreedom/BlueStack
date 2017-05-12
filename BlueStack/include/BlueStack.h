@@ -3,7 +3,7 @@
  *                                                                          *
  * This file is part of file of BlueRoomba Firmware.                        *
  *                                                                          *
- *   BlueRoomba isfree software: you can redistribute it and/or modify it   *
+ *   BlueRoomba is free software: you can redistribute it and/or modify it  *
  *   under the terms of the GNU Lesser General Public License as published  *
  *   by the Free Software Foundation, either version 3 of the License, or   *
  *   (at your option) any later version.                                    *
@@ -38,9 +38,6 @@
 #ifndef BLUESTACK_H_
 #define BLUESTACK_H_
 
-// Macro para checar errores sin bloqueo.
-#define delay_ms(ms) nrf_delay_ms(ms)
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <string.h>
@@ -63,6 +60,11 @@
 
 #include "bluestack_events.h"
 #include "bluestack_service.h"
+
+
+#define delay_us(us) nrf_delay_us(us)
+#define delay_ms(ms) nrf_delay_ms(ms)
+#define delay(ms) nrf_delay_ms(ms)
 
 #define CHECK_ERROR(ERR_CODE)  if (ERR_CODE != NRF_SUCCESS) return ERR_CODE
 
@@ -117,6 +119,7 @@ uint32_t BlueStack_PowerManage();
  */
 uint32_t BlueStack_AdvertisingStart();
 
+uint32_t BlueStack_AdvertisingStop();
 /**
  * @brief      Función para actualizar los datos de publicidad.
  *
